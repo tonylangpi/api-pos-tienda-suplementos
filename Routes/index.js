@@ -5,6 +5,7 @@ const empresas = require('./empresas.route');
 const presentaciones = require('./presentaciones.route');
 const marcas = require('./marcas.route');
 const sabores = require('./sabores.route');
+const productos = require('./productos.route');
 // const roles = require('./roles.route');
 // const auth = require('./auth.route');
 // const beneficiarios = require('./beneficiarios.route');
@@ -16,6 +17,7 @@ router.use('/presentaciones',presentaciones);
 router.use('/categorias',categorias);
 router.use('/marcas',marcas);
 router.use('/sabores',sabores); 
+router.use('/productos',productos);
 /*modulo de seguridad */
 router.use('/empresas',empresas);
 // router.use('/auth', auth);
