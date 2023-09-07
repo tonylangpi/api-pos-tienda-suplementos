@@ -51,18 +51,25 @@ const getSaboresByProduct = (req, res) => {
   );
 };
 const createProductos = (req, res) =>{
-  const{descripcion, idUsuario} = req.body;
+  const{ codigo,descripcion,stock_minimo,lote,idCategoria,idMarca,idEmpresa,idUsuario} = req.body;
   try {
-      if(!descripcion || !idUsuario){
+      if(!codigo || !descripcion || !stock_minimo || !lote || !idCategoria || !idMarca 
+        || !idUsuario || !idEmpresa || !idUsuario){
         return  res.json({
           message: "Faltan datos"
       }); 
       } else {
-         connection.query(`INSERT INTO Categoria SET ?`,{
+         connection.query(`INSERT INTO Producto SET ?`,{
+          codigo:codigo,
           descripcion:descripcion,
+          stock_minimo:stock_minimo,
+          lote:lote,
+          idCategoria:idCategoria,
+          idMarca:idMarca,
+          idEmpresa:idEmpresa,
           idUsuario:idUsuario
         });
-        res.json({message:"categoria creada"}); 
+        res.json({message:"producto creado"}); 
       }
   } catch (error) {
      res.json(error); 
