@@ -4,9 +4,12 @@ const { connection } = require("../Database/bd");
 const getProductos = (req, res) => {
   const {idEmpresa} = req.params;
   connection.query(
-    `select Prod.codigo, Prod.descripcion, Prod.precio_venta, Prod.stock, Prod.stock_minimo, Prod.lote, C.descripcion as Categoria, M.marca from Producto Prod
+    `select Prod.codigo, Prod.descripcion, Prod.precio_venta, Prod.stock, Prod.stock_minimo, Prod.lote, C.descripcion as Categoria, M.marca, Sab.sabor, Pres.presentacion from Producto Prod
     inner join Categoria C on C.idCategoria = Prod.idCategoria
-    inner join Marca M on M.idMarca = Prod.idMarca WHERE Prod.idEmpresa = ?`,[idEmpresa],
+    inner join Marca M on M.idMarca = Prod.idMarca
+    inner join Presentacion Pres on Pres.idPresentacion = Prod.idPresentacion
+    inner join Sabores Sab on Sab.idSabor = Prod.idSabor 
+    where Prod.idEmpresa = ?`,[idEmpresa],
     (error, results) => {
       if (error) {
         console.log(error);
@@ -17,30 +20,16 @@ const getProductos = (req, res) => {
   );
 };
 
-const getPresentacionesByProducts = (req, res) => {
-    const {idEmpresa, codigoProd} = req.body; 
-  connection.query(
-    `select Pres.presentacion from Producto Prod
-    inner join Presentacion_Producto PresP on PresP.idProducto = Prod.codigo
-    inner join Presentacion Pres on Pres.idPresentacion = PresP.idPresentacion
-    WHERE Prod.idEmpresa = ? and Prod.codigo = ?`,[idEmpresa,codigoProd],
-    (error, results) => {
-      if (error) {
-        console.log(error);
-      } else {
-        res.json(results);
-      }
-    }
-  );
-};
 
 const getSaboresByProduct = (req, res) => {
     const {idEmpresa, codigoProd} = req.body; 
   connection.query(
-    `select Sab.sabor from Producto Prod
-    inner join sabores_producto SabProd on SabProd.idProducto = Prod.codigo
-    inner join Sabores Sab on Sab.idSabor = SabProd.idSabor
-    WHERE Prod.idEmpresa = ? and Prod.codigo = ?`,[idEmpresa,codigoProd],
+    `select Prod.codigo, Prod.descripcion, Prod.precio_venta, Prod.stock, Prod.stock_minimo, Prod.lote, C.descripcion as Categoria, M.marca, Sab.sabor, Pres.presentacion from Producto Prod
+    inner join Categoria C on C.idCategoria = Prod.idCategoria
+    inner join Marca M on M.idMarca = Prod.idMarca
+    inner join Presentacion Pres on Pres.idPresentacion = Prod.idPresentacion
+    inner join Sabores Sab on Sab.idSabor = Prod.idSabor 
+    where Prod.idEmpresa = ?`,[idEmpresa,codigoProd],
     (error, results) => {
       if (error) {
         console.log(error);
@@ -51,7 +40,7 @@ const getSaboresByProduct = (req, res) => {
   );
 };
 const createProductos = (req, res) =>{
-  const{ codigo,descripcion,stock_minimo,lote,idCategoria,idMarca,idEmpresa,idUsuario} = req.body;
+  const{ codigo,descripcion,stock_minimo,lote,idCategoria,idMarca,idPresentacion,idSabor,idEmpresa,idUsuario} = req.body;
   try {
       if(!codigo || !descripcion || !stock_minimo || !lote || !idCategoria || !idMarca 
         || !idUsuario || !idEmpresa || !idUsuario){
@@ -66,6 +55,8 @@ const createProductos = (req, res) =>{
           lote:lote,
           idCategoria:idCategoria,
           idMarca:idMarca,
+          idPresentacion:idPresentacion,
+          idSabor:idSabor,
           idEmpresa:idEmpresa,
           idUsuario:idUsuario
         });
@@ -102,6 +93,5 @@ module.exports = {
   createProductos,
   updateProductos,
   deleteProductos,
-  getPresentacionesByProducts,
   getSaboresByProduct
 };
