@@ -6,10 +6,12 @@ const { getProductos,
     createProductos,
     updateProductos,
     deleteProductos,
-    getSaboresByProduct} = require('../Controllers/productos.controller');
+    getSaboresByProduct,
+    settingsProduct} = require('../Controllers/productos.controller');
 
 //rutas de CRUD sobre tabla USUARIOS EN BD EN LA NUBE
 router.get('/all/:idEmpresa',getProductos);
+router.get('/settingsProducto/:idEmpresa', settingsProduct);
 router.post('/oneProducto',getOneProduct);
 router.post('/createProducto',createProductos);
 router.put('/updateProducto',updateProductos); 

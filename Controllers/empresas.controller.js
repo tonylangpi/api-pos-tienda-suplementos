@@ -1,17 +1,16 @@
 const { connection } = require("../Database/bd");
 //const bcrypt = require("bcryptjs");
 
-const getEmpresas = (req, res) => {
-  connection.query(
-    "select * from Empresa",
-    (error, results) => {
-      if (error) {
-        console.log(error);
-      } else {
-        res.json(results);
-      }
-    }
-  );
+const getEmpresas = async(req, res) => {
+  try {
+    const empresas = await connection.query("select * from Empresa");
+    res.json(empresas[0]);
+  } catch (error) {
+     console.log(error);
+     res.json({message:"algo salio bad"}); 
+  }
+
+
 };
 
 const DeleteEmpresas = (req, res) => {

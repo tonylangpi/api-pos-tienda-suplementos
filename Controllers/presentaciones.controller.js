@@ -1,18 +1,18 @@
 const { connection } = require("../Database/bd");
 //const bcrypt = require("bcryptjs");
 
-const getPresentaciones = (req, res) => {
-  connection.query(
-    `select P.idPresentacion, P.presentacion, U.nombre as CreadoPor from Presentacion P
-    inner join Usuario U on U.idUsuario = P.idUsuario`,
-    (error, results) => {
-      if (error) {
-        console.log(error);
-      } else {
-        res.json(results);
-      }
-    }
-  );
+const getPresentaciones = async(req, res) => {
+  try {
+  const presentaciones = await  connection.query(
+      `select P.idPresentacion, P.presentacion, U.nombre as CreadoPor from Presentacion P
+      inner join Usuario U on U.idUsuario = P.idUsuario`
+    );
+    res.json(presentaciones[0]);
+  } catch (error) {
+      console.log(error);
+      res.json({message:"algo salio mal"});
+  }
+  
 };
 const createPresentaciones = (req, res) =>{
   const{presentacion, idUsuario} = req.body;
@@ -43,13 +43,19 @@ const updatePresentaciones = (req,res) =>{
   }
 }
 
-const deletePresentaciones = (req, res) =>{
+const deletePresentaciones = async(req, res) =>{
     const {id} = req.params; 
   try {
+    const presentacionesInProducts = await connection.query(`SELECT * FROM Producto WHERE idPresentacion = ?`,[id]);
+    if(presentacionesInProducts[0].length > 0){
+       res.json({message:"no puedes borrar esta presentacion, pues esta enlazada a productos"});
+    }else{
       connection.query(`DELETE FROM Presentacion WHERE idPresentacion = ?`, [
         id
       ]);
-      res.status(204).json({"message" : "presentacion de producto borrada"}); 
+      res.json({"message" : "presentacion de producto borrada"}); 
+    }
+      
   } catch (error) {
      res.json(error)
   }

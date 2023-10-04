@@ -7,7 +7,7 @@ const { getProveedores, createProveedores, updateProveedores, changeStatusProvee
 router.get('/all',getProveedores);
 router.post('/create',createProveedores);
 router.put('/updateProveedor',updateProveedores); 
-router.delete('/deleteProveedor/:id', changeStatusProveedor);
+router.delete('/changeStatus/:id', changeStatusProveedor);
 // router.post('/createProducto',createProductos);
 // router.post('/getSabores', getSaboresByProduct);
 

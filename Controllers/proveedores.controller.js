@@ -1,17 +1,17 @@
 const { connection } = require("../Database/bd");
 
 
-const getProveedores = (req, res) => {
-  connection.query(
-    `SELECT * FROM Proveedores`,
-    (error, results) => {
-      if (error) {
-        console.log(error);
-      } else {
-        res.json(results);
-      }
-    }
-  );
+const getProveedores = async(req, res) => {
+  try {
+     const proveedrores = await  connection.query(
+      `SELECT * FROM Proveedores`
+    );
+    res.json(proveedrores[0]);
+  } catch (error) {
+     console.log(error);
+     res.json({message:"fallo"});
+  }
+ 
 };
 
 const getOneProduct = (req,res) =>{
@@ -75,50 +75,51 @@ const createProveedores = (req, res) =>{
 }
 
 const updateProveedores = (req,res) =>{
-    const{nombreProve,telefono,direccion,idProveedor} = req.body;
+    const{nombreProve,telefono,direccion,idProveedor, Estado, idUsuario, fecha_creacion} = req.body;
   try {
-    connection.query('UPDATE Proveedores SET ? WHERE idProveedor = ?', [{ 
+    if(!nombreProve || !telefono || !direccion || !idProveedor){
+      return  res.json({
+        message: "Faltan datos"
+    }); 
+    } else {
+      connection.query('UPDATE Proveedores SET ? WHERE idProveedor = ?', [{ 
         nombreProve:nombreProve,
         telefono:telefono,
         direccion:direccion}, idProveedor]);
      res.json({message: "Proveedor Actualizado"});
+    }
+  
   } catch (error) {
      res.json(error); 
   }
 }
 
-const changeStatusProveedor = (req, res) =>{
+const changeStatusProveedor = async(req, res) =>{
     const {id} = req.params; 
-    const estadoInactivo = 'INACTIVO';
+    const estadoInactivo = 'NO ACTIVO';
     const estadoActivo = 'ACTIVO'; 
-  try {
-     connection.query(`SELECT Estado FROM Proveedores WHERE idProveedor = ?`,[id],(error,results) =>{
-       if(error){
-         console.log(error);
-       }else{
-          let status = results[0].Estado;
-          if(status === "ACTIVO"){
-            connection.query(`UPDATE Proveedores SET Estado = '${estadoInactivo}' WHERE idProveedor = ?`, [id],(error,results) =>{
-              if(error){
-                  console.log(error);
-              }else{
-                  res.json({message:"Proveedor inactivado"})
-              }
-          });
-          }else{
-            connection.query(`UPDATE Proveedores SET Estado = '${estadoActivo}' WHERE idProveedor = ?`, [id],(error,results) =>{
-              if(error){
-                  console.log(error);
-              }else{
-                  res.json({message:"Proveedor Activado"})
-              }
-          });
-          }
-       }
-     })
-  } catch (error) {
-     res.json(error)
-  }
+    try {
+      const Estado = await connection.query(
+        `SELECT Estado FROM Proveedores WHERE idProveedor = ?`,
+        [id]
+      );
+      let EstadoFinal = Estado[0];
+      if (EstadoFinal[0]?.Estado == "ACTIVO") {
+        connection.query(
+          `UPDATE Proveedores SET Estado = '${estadoInactivo}' WHERE idProveedor = ?`,
+          [id]
+        );
+        res.json({ message: "Proveedor inactivado" });
+      } else {
+        connection.query(
+          `UPDATE Proveedores SET Estado = '${estadoActivo}' WHERE idProveedor = ?`,
+          [id]
+        );
+        res.json({ message: "Propietario Activado" });
+      }
+    } catch (error) {
+      res.json(error);
+    }
 }
 module.exports = {
   getProveedores,
