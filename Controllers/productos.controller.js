@@ -63,7 +63,7 @@ const createProductos = async(req, res) =>{
       }); 
       } else {
         const findID = await connection.query(`SELECT * FROM Producto WHERE codigo = ?`,[codigo]);
-        if(findID?.length > 0){
+        if(findID[0].length > 0){
           res.json({message:"EL Codigo SKU ya esta registrado en el historial de productos"});
         }else{
           connection.query(`INSERT INTO Producto SET ?`,{
