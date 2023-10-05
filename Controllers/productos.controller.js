@@ -118,9 +118,9 @@ const settingsProduct = async(req, res) => {
     inner join Sabores Sab on Sab.idSabor = Prod.idSabor 
     where Prod.idEmpresa = ?`,[idEmpresa]);
     const categorias = await connection.query(`SELECT idCategoria, descripcion FROM Categoria`);
-    const marcas = await connection.query(`SELECT idMarca, Marca FROM marca`);
-    const  sabores = await connection.query(`SELECT idSabor, sabor FROM sabores`);
-    const presentaciones = await connection.query(`SELECT idPresentacion, presentacion FROM presentacion`); 
+    const marcas = await connection.query(`SELECT idMarca, Marca FROM Marca`);
+    const  sabores = await connection.query(`SELECT idSabor, sabor FROM Sabores`);
+    const presentaciones = await connection.query(`SELECT idPresentacion, presentacion FROM Presentacion`); 
      res.json({
        productos: productos[0],
        categorias: categorias[0],

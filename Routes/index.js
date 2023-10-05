@@ -7,6 +7,7 @@ const marcas = require('./marcas.route');
 const sabores = require('./sabores.route');
 const productos = require('./productos.route');
 const proveedores = require('./proveedores.route'); 
+const usuarios = require('./usuarios.route');
 // const roles = require('./roles.route');
 // const auth = require('./auth.route');
 // const beneficiarios = require('./beneficiarios.route');
@@ -23,6 +24,7 @@ router.use('/productos',productos);
 router.use('/proveedores', proveedores); 
 /*modulo de seguridad */
 router.use('/empresas',empresas);
+router.use('/usuarios', usuarios)
 // router.use('/auth', auth);
 // router.use('/beneficiarios', beneficiarios);
 // router.use('/sesiones', sesiones);

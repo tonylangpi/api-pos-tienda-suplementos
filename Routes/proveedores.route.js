@@ -8,7 +8,6 @@ router.get('/all',getProveedores);
 router.post('/create',createProveedores);
 router.put('/updateProveedor',updateProveedores); 
 router.delete('/changeStatus/:id', changeStatusProveedor);
-// router.post('/createProducto',createProductos);
-// router.post('/getSabores', getSaboresByProduct);
+
 
 module.exports = router;
