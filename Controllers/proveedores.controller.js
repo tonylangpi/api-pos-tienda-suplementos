@@ -115,7 +115,7 @@ const changeStatusProveedor = async(req, res) =>{
           `UPDATE Proveedores SET Estado = '${estadoActivo}' WHERE idProveedor = ?`,
           [id]
         );
-        res.json({ message: "Propietario Activado" });
+        res.json({ message: "Proveedor Activado" });
       }
     } catch (error) {
       res.json(error);
