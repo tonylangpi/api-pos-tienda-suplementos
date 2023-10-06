@@ -9,6 +9,7 @@ const productos = require('./productos.route');
 const proveedores = require('./proveedores.route'); 
 const usuarios = require('./usuarios.route');
 const tipoCompra = require('./tipocompra.route'); 
+const EncabezadosCompra = require('./encabezadosCompra.route'); 
 // const roles = require('./roles.route');
 // const auth = require('./auth.route');
 // const beneficiarios = require('./beneficiarios.route');
@@ -24,6 +25,7 @@ router.use('/productos',productos);
 /* modulo de compras */
 router.use('/proveedores', proveedores); 
 router.use('/tipocompra', tipoCompra); 
+router.use('/encabezadosCompra',EncabezadosCompra);
 /*modulo de seguridad */
 router.use('/empresas',empresas);
 router.use('/usuarios', usuarios)
