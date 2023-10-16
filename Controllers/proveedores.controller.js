@@ -13,28 +13,6 @@ const getProveedores = async(req, res) => {
   }
  
 };
-
-const getOneProduct = (req,res) =>{
-  const{idEmpresa, codProd} = req.body; 
-  try {
-    connection.query(`select Prod.codigo, Prod.descripcion, Prod.precio_venta, Prod.stock, Prod.stock_minimo, Prod.lote, C.descripcion as Categoria, M.marca, Sab.sabor, Pres.presentacion from Producto Prod
-    inner join Categoria C on C.idCategoria = Prod.idCategoria
-    inner join Marca M on M.idMarca = Prod.idMarca
-    inner join Presentacion Pres on Pres.idPresentacion = Prod.idPresentacion
-    inner join Sabores Sab on Sab.idSabor = Prod.idSabor 
-    where Prod.idEmpresa = ? and Prod.codigo = ? `,[idEmpresa,codProd],(error, results) =>{
-       if(error){
-        console.log(error);
-       }else{
-         res.json(results); 
-       }
-    });
-
-  } catch (error) {
-     console.error(error); 
-  }
-}
-
 const getSaboresByProduct = (req, res) => {
     const {idEmpresa, codigoProd} = req.body; 
   connection.query(

@@ -10,6 +10,7 @@ const proveedores = require('./proveedores.route');
 const usuarios = require('./usuarios.route');
 const tipoCompra = require('./tipocompra.route'); 
 const EncabezadosCompra = require('./encabezadosCompra.route'); 
+const DetallesCompras = require('./detallesCompra.route'); 
 // const roles = require('./roles.route');
 // const auth = require('./auth.route');
 // const beneficiarios = require('./beneficiarios.route');
@@ -26,13 +27,12 @@ router.use('/productos',productos);
 router.use('/proveedores', proveedores); 
 router.use('/tipocompra', tipoCompra); 
 router.use('/encabezadosCompra',EncabezadosCompra);
+router.use('/detallesCompras', DetallesCompras);
+/*MODULO DE VENTAS */
+
 /*modulo de seguridad */
 router.use('/empresas',empresas);
 router.use('/usuarios', usuarios)
-// router.use('/auth', auth);
-// router.use('/beneficiarios', beneficiarios);
-// router.use('/sesiones', sesiones);
-// router.use('/reportes',reportes);
-// router.use('/servicios',servicios)
+
 
 module.exports = router; 
