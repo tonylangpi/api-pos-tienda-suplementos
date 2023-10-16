@@ -28,13 +28,11 @@ router.use('/proveedores', proveedores);
 router.use('/tipocompra', tipoCompra); 
 router.use('/encabezadosCompra',EncabezadosCompra);
 router.use('/detallesCompras', DetallesCompras);
+/*MODULO DE VENTAS */
+
 /*modulo de seguridad */
 router.use('/empresas',empresas);
 router.use('/usuarios', usuarios)
-// router.use('/auth', auth);
-// router.use('/beneficiarios', beneficiarios);
-// router.use('/sesiones', sesiones);
-// router.use('/reportes',reportes);
-// router.use('/servicios',servicios)
+
 
 module.exports = router; 
