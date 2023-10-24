@@ -8,7 +8,7 @@ const getDetallesCompras = async(req, res) => {
       `SELECT dc.idDetalleCompra, dc.Cantidad, p.codigo, p.descripcion, p.precio_costo, (p.precio_costo * dc.Cantidad) as Subtotal FROM Detalle_compra dc
       inner join Producto p on p.codigo = dc.idProducto WHERE idEncabezado = ?`,[idEncabezado]
     );
-    const productos = await connection.query(`select codigo, descripcion, precio_costo, precio_venta, precio_mayoreo, stock, ganancia, Estado from Producto WHERE idEmpresa = ? AND Estado = 'ACTIVO'`,[idEmpresa]);
+    const productos = await connection.query(`select codigo, descripcion, precio_costo, precio_venta, stock, ganancia, Estado from Producto WHERE idEmpresa = ? AND Estado = 'ACTIVO'`,[idEmpresa]);
     res.json({
         detalles: detallesFactura[0],
         productos: productos[0]

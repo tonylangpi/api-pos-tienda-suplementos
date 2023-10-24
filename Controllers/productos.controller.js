@@ -64,7 +64,7 @@ const getSaboresByProduct = (req, res) => {
   );
 };
 const createProductos = async(req, res) =>{
-  const{ codigo,descripcion,stock,precio_costo,precio_venta,precio_mayoreo,stock_minimo,lote,idCategoria,idMarca,idPresentacion,idSabor,idEmpresa,idUsuario,ganancia} = req.body;
+  const{ codigo,descripcion,stock,precio_costo,precio_venta,stock_minimo,lote,idCategoria,idMarca,idPresentacion,idSabor,idEmpresa,idUsuario,ganancia} = req.body;
   try {
       if(!codigo || !descripcion || !stock_minimo || !lote || !idCategoria || !idMarca 
         || !idUsuario || !idEmpresa || !idUsuario){
@@ -76,13 +76,12 @@ const createProductos = async(req, res) =>{
         if(findID[0].length > 0){
           res.json({message:"EL Codigo SKU ya esta registrado en el historial de productos"});
         }else{
-          if(stock && precio_costo && precio_venta && precio_mayoreo && ganancia){
+          if(stock && precio_costo && precio_venta  && ganancia){
             connection.query(`INSERT INTO Producto SET ?`,{
               codigo:codigo,
               descripcion:descripcion,
               precio_costo:precio_costo,
               precio_venta:precio_venta,
-              precio_mayoreo:precio_mayoreo,
               stock:stock,
               stock_minimo:stock_minimo,
               lote:lote,
@@ -102,7 +101,6 @@ const createProductos = async(req, res) =>{
               descripcion:descripcion,
               precio_costo:0,
               precio_venta:0,
-              precio_mayoreo:0,
               stock:0,
               stock_minimo:stock_minimo,
               lote:lote,
