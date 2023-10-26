@@ -4,7 +4,7 @@ const bcrypt = require("bcryptjs");
 const getUsuarios = async (req, res) => {
   try {
     const usuarios = await connection.query(`select u.idUsuario, u.nombre, u.correo, u.celular, r.descripcion as Rol from Usuario u
-    inner join rol r on r.idRol = u.idRol`);
+    inner join Rol r on r.idRol = u.idRol`);
     const roles = await connection.query(`select r.idRol, r.descripcion, r.esActivo, n.nombreNivel from Rol r
     inner join Nivel n on n.idNivel = r.idNivel where r.esActivo = 'ACTIVO'`); 
     res.json({
