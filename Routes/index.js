@@ -16,12 +16,7 @@ const tipoVenta = require('./tipoventa.route');
 const MetodoPago = require('./metodopago.route'); 
 const EncabezadosVenta = require('./encabezadosVenta.route'); 
 const detallesVenta = require('./detallesVentas.route');
-// const roles = require('./roles.route');
-// const auth = require('./auth.route');
-// const beneficiarios = require('./beneficiarios.route');
-// const sesiones = require('./sesiones.route');
-// const reportes = require('./reportes.route');
-// const servicios = require('./servicios.route');
+const roles = require('./roles.route'); 
 /*rutas para el modulo de productos */
 router.use('/presentaciones',presentaciones); 
 router.use('/categorias',categorias);
@@ -41,7 +36,8 @@ router.use('/encabezadosVenta',EncabezadosVenta);
 router.use('/detallesVenta',detallesVenta)
 /*modulo de seguridad */
 router.use('/empresas',empresas);
-router.use('/usuarios', usuarios)
+router.use('/usuarios', usuarios);
+router.use('/roles',roles)
 
 
 module.exports = router; 

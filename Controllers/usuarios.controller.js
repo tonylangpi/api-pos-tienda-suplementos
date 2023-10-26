@@ -3,9 +3,14 @@ const bcrypt = require("bcryptjs");
 
 const getUsuarios = async (req, res) => {
   try {
-    const usuarios = await connection.query(`select u.nombre, u.correo, u.celular, r.descripcion as Rol from usuario u
+    const usuarios = await connection.query(`select u.idUsuario, u.nombre, u.correo, u.celular, r.descripcion as Rol from Usuario u
     inner join rol r on r.idRol = u.idRol`);
-    res.json(usuarios[0]);
+    const roles = await connection.query(`select r.idRol, r.descripcion, r.esActivo, n.nombreNivel from Rol r
+    inner join Nivel n on n.idNivel = r.idNivel where r.esActivo = 'ACTIVO'`); 
+    res.json({
+       usuarios: usuarios[0],
+       roles:roles[0]
+    });
   } catch (error) {
     console.log(error);
     res.json({ message: "algo salio mal" });
@@ -58,43 +63,68 @@ const asignarUsuarioEmpresa = async(req, res) => {
     res.json(error);
   }
 };
-
-const updateUsuario = (req, res) => {
-  const { descripcion, idCategoria } = req.body;
+const quitarUsuarioEmpresa = async(req, res) => {
+  const {id} = req.params;
   try {
-    connection.query("UPDATE Categoria SET ? WHERE idCategoria = ?", [
-      { descripcion: descripcion },
-      idCategoria,
-    ]);
-    res.json({ message: "Categoria Actualizada" });
-  } catch (error) {
-    res.json(error);
-  }
-};
-
-const deleteUsuario = async (req, res) => {
-  const { id } = req.params;
-  try {
-    const categoriaInProducts = await connection.query(
-      `SELECT * FROM Producto WHERE idCategoria = ?`,
-      [id]
-    );
-    if (categoriaInProducts[0].length > 0) {
-      res.json({
-        message:"no puedes borrar esta categoria, pues ya la tienen uno o varios productos"
+    if (!id) {
+      return res.json({
+        message: "Faltan datos",
       });
     } else {
-      connection.query(`DELETE FROM Categoria WHERE idCategoria = ?`, [id]);
-      res.json({ message: "categoria borrada" });
+          await connection.query(`DELETE FROM Empresas_Usuario WHERE id = ?`,[id]);
+          res.json({message:"El usuario ha sido desasignado de  la empresa"});
     }
   } catch (error) {
     res.json(error);
   }
 };
+const getUserEmpresa = async(req,res) =>{
+  const {id} = req.params; 
+  try {
+    const empresasDeUsuario = await connection.query(`select eu.id, usu.nombre, usu.correo, usu.celular, e.nombre as Empresa, e.direccion from Empresas_Usuario eu
+    inner join Empresa e on e.idEmpresa = eu.idEmpresa
+    inner join Usuario usu on usu.idUsuario = eu.idUsuario
+    where eu.idUsuario = ? `, [id]); 
+    const empresas = await connection.query(`SELECT * FROM Empresa`); 
+    res.json({
+       empresasAsignadas: empresasDeUsuario[0],
+       empresas: empresas[0]
+    }); 
+  } catch (error) {
+     console.log(error);
+     res.json({message:"Algo ocurrio mal"}); 
+  }
+}
+
+const getUserById = async(req,res) =>{
+  const {id} = req.params; 
+  try {
+    const Usuario = await connection.query(`select * from Usuario where idUsuario = ?`, [id]);
+    res.json(Usuario[0]); 
+  } catch (error) {
+     console.log(error);
+     res.json({message:"Algo ocurrio mal"}); 
+  }
+}
+const editpassUser = async(req,res) =>{
+  const {idUsuario,nombre,correo,celular, clave} = req.body; 
+  try {
+    let passHash = await bcrypt.hash(clave, 10);
+    await  connection.query(`UPDATE Usuario SET ? WHERE idUsuario = ?`, [{
+      clave: passHash
+    },idUsuario]);
+    res.json({message:"Contraseña actualizada"});
+  } catch (error) {
+     console.log(error);
+     res.json({message:"Algo ocurrio mal"}); 
+  }
+}
 module.exports = {
     getUsuarios,
     createUsuario,
-    updateUsuario,
-    deleteUsuario,
-    asignarUsuarioEmpresa
+    asignarUsuarioEmpresa,
+    getUserEmpresa,
+    quitarUsuarioEmpresa,
+    getUserById,
+    editpassUser
 };
