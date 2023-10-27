@@ -20,31 +20,35 @@ const getDetallesCompras = async(req, res) => {
   
 };
 const createDetalleCompra = async(req, res) =>{
-  const{idEncabezado, idProducto, Cantidad, precio_costo, ganancia, precio_venta, precio_mayoreo, idEmpresa} = req.body;
+  const{idEncabezado, idProducto, Cantidad, precio_costo, ganancia, precio_venta, idEmpresa} = req.body;
   try {
-      if(!idEncabezado || !idProducto || !Cantidad || !precio_costo || !precio_venta || !precio_mayoreo){
+      if(!idEncabezado || !idProducto || !Cantidad || !precio_costo || !precio_venta){
         return  res.json({
           message: "Faltan datos"
       }); 
       } else {
-      const detallecompra = await connection.query(`INSERT INTO Detalle_compra SET ?`,{
-          idEncabezado:idEncabezado,
-          idProducto:idProducto,
-          Cantidad:Cantidad
-        });
-        const existenciaAnterior = await connection.query(`SELECT * FROM Producto where codigo = ? AND idEmpresa = ?`,[idProducto, idEmpresa]); 
-        let producto = existenciaAnterior[0];
-        let stock = parseInt(producto[0]?.stock);
-        let aumentarStock = stock + parseInt(Cantidad); 
-        connection.query('UPDATE Producto SET ? WHERE codigo = ?', [
-          { precio_costo: precio_costo,
-            precio_venta:precio_venta,
-            precio_mayoreo:precio_mayoreo,
-            stock:aumentarStock,
-            ganancia:ganancia
-          }, 
-          idProducto]);
-        res.json({message:"DETALLE COMPRA AGREGADO"}); 
+        const detallecompraExistente = await connection.query(`SELECT * FROM Detalle_compra WHERE idProducto  = ? and idEncabezado = ?`,[idProducto,idEncabezado]); 
+        if(detallecompraExistente[0].length > 0){
+                res.json({message:"YA AÑADISTE ESTE DETALLE, SI TE EQUIVOCASTE ELIMINALO Y VUELVELO A CREAR"})
+        }else{
+          const detallecompra = await connection.query(`INSERT INTO Detalle_compra SET ?`,{
+            idEncabezado:idEncabezado,
+            idProducto:idProducto,
+            Cantidad:Cantidad
+          });
+          const existenciaAnterior = await connection.query(`SELECT * FROM Producto where codigo = ? AND idEmpresa = ?`,[idProducto, idEmpresa]); 
+          let producto = existenciaAnterior[0];
+          let stock = parseInt(producto[0]?.stock);
+          let aumentarStock = stock + parseInt(Cantidad); 
+          connection.query('UPDATE Producto SET ? WHERE codigo = ?', [
+            { precio_costo: precio_costo,
+              precio_venta:precio_venta,
+              stock:aumentarStock,
+              ganancia:ganancia
+            }, 
+            idProducto]);
+          res.json({message:"DETALLE COMPRA AGREGADO"}); 
+        }
       }
   } catch (error) {
      res.json(error); 

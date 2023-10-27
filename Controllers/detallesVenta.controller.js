@@ -27,6 +27,10 @@ const createDetalleVentas = async(req, res) =>{
           message: "Faltan datos"
       }); 
       } else {
+        const detalleVentaExistente = await connection.query(`SELECT * FROM detalle_Venta WHERE idEncabezadoVenta = ? AND idProducto = ?`,[idEncabezadoVenta,idProducto]);
+        if(detalleVentaExistente[0].length > 0){
+           res.json({message:"YA EXISTE ESTE DETALLE CON ESE PRODUCTO SI TE EQUIVOCASTE ELIMINA EL DETALLE Y VUELVE A INGRESARLO"});
+        }else{
           const detalleventa = await connection.query(`INSERT INTO detalle_Venta SET ?`,{
             idEncabezadoVenta:idEncabezadoVenta,
             cantidad:cantidad,
@@ -38,6 +42,7 @@ const createDetalleVentas = async(req, res) =>{
               }, 
               idProducto, idEmpresa]);
             res.json({message:"DETALLE VENTA AGREGADO Y STOCK DEL PRODUCTO ACTUALIZADO"}); 
+        }
       }
   } catch (error) {
      res.json(error); 
