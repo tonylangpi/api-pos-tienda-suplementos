@@ -1,5 +1,5 @@
 const { connection } = require("../Database/bd");
-
+const PDF = require("pdfkit-construct");
 
 const getProductos = async(req, res) => {
   const {idEmpresa} = req.params;
@@ -196,6 +196,92 @@ const settingsProduct = async(req, res) => {
  
 };
 
+const ReporteProductos = async(req, res) => {
+  const {idEmpresa} = req.params;
+let hoy = new Date();
+let dia = hoy.getDate();
+let mes = hoy.getMonth() + 1; // Los meses están indexados desde 0
+let anio = hoy.getFullYear();
+
+  try {
+    const productos = await connection.query(`select Prod.codigo, Prod.descripcion, Prod.precio_venta, Prod.stock, Prod.stock_minimo,  SUBSTRING(Prod.lote,1,10) as lote, C.descripcion as Categoria, M.marca, Sab.sabor, Pres.presentacion, Prod.Estado from Producto Prod
+    inner join Categoria C on C.idCategoria = Prod.idCategoria
+    inner join Marca M on M.idMarca = Prod.idMarca
+    inner join Presentacion Pres on Pres.idPresentacion = Prod.idPresentacion
+    inner join Sabores Sab on Sab.idSabor = Prod.idSabor 
+    where Prod.idEmpresa = ?`,[idEmpresa]);
+    if(productos[0].length > 0){
+      const doc = new PDF({
+        size: 'A4', // Cambia esto al tamaño de hoja deseado, como 'letter'
+        margins: {
+           top: 20,
+           bottom: 20,
+           left: 20,
+           right: 20,
+        },
+        layout: 'landscape', // Cambia esto a 'portrait' si deseas un diseño de retrato
+        bufferPages: true,
+       });
+      const stream = res.writeHead(200, {
+        "Content-Type": "application/pdf",
+        "Content-Disposition": `attachment;filename=ReporteProductos.pdf`,
+      });
+      doc.on("data", (chunk) => stream.write(chunk));
+      doc.on("end", () => stream.end());
+      doc.setDocumentHeader(
+        {
+          height: "15",
+        },
+        () => {
+          doc.fontSize(15).text("REPORTE DE PRODUCTOS EN GENERAL", {
+            width: 420,
+            align: "center",
+          });
+          doc.fontSize(12);
+          doc.text(`FECHA REPORTE:  ${dia} / ${mes} / ${anio}`, {
+            width: 420,
+            align: "left",
+          });
+        }
+      );
+      doc.addTable(
+        [
+          { key: "codigo", label: "Codigo", align: "left" },
+          { key: "descripcion", label: "Descripcion", align: "left" },
+          { key: "precio_venta", label: "Precio Q", align: "right" },
+          { key: "stock", label: "stock", align: "right" },
+          { key: "stock_minimo", label: "stock_minimo", align: "right" },
+          { key: "lote", label: "Lote", align: "right" },
+          { key: "Categoria", label: "Categoria", align: "right" },
+          { key: "marca", label: "Marca", align: "right" },
+          { key: "sabor", label: "Sabor", align: "right" },
+          { key: "presentacion", label: "Presentacion", align: "right" },
+          { key: "Estado", label: "Estado", align: "right" }
+        ],
+        productos[0],
+        {
+          border: null,
+          width: "fill_body",
+          striped: true,
+          stripedColors: ["#DFDDBB", "#E9F1D7"],
+          cellsPadding: 5,
+          marginTop: 20,
+          marginLeft: 10,
+          marginRight: 45,
+          headAlign: "left",
+        }
+      );
+      doc.render();
+      doc.end();
+    }else{
+       res.json({message:"no hay datos"}); 
+    }
+  } catch (error) {
+    console.log(error);
+    res.json({message:"algo salio mal"});
+  }
+ 
+};
 module.exports = {
   getProductos,
   getOneProduct,
@@ -203,5 +289,6 @@ module.exports = {
   updateProductos,
   deleteProductos,
   getSaboresByProduct,
-  settingsProduct
+  settingsProduct,
+  ReporteProductos
 };
