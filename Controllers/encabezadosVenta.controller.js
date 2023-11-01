@@ -216,9 +216,61 @@ const generarPdf = async (req, res) => {
   }
 };
 
+
+const ReporteFacturas = async (req, res) => {
+  const { fechaInicio, fechaFin, Estado, idEmpresa } = req.body;
+  let fechaini = fechaInicio;
+  let fechafin = fechaFin;
+  let status = Estado;
+
+  fechaactual = new Date();
+
+  if (fechaini == '' || fechaini == null){
+      fechaini = '00001-01-01';
+  }
+
+  if (fechafin == '' || fechafin == null){
+      fechafin = '9999-12-31'
+  }
+
+  if (status == '' || status == null){
+    status = null;
+  }   
+  try {
+      const consulta  = await connection.query(` SELECT
+      ev.idEncabezadoVenta,
+      ev.idtipoVenta,
+      ev.Estado,
+      tv.nombreTipoVenta,
+      ev.idCliente,
+      C.nombre,
+      C.nitCliente,
+      SUBSTRING(ev.fechaVenta, 1, 10) AS Fecha_venta,
+      usu.nombre AS Usuario,
+      COALESCE(SUM(prod.precio_venta * dv.Cantidad), 0) AS totalVenta
+    FROM Encabezado_venta ev
+    LEFT JOIN detalle_Venta dv ON dv.idEncabezadoVenta = ev.idEncabezadoVenta
+    LEFT JOIN Producto prod ON prod.codigo = dv.idProducto
+    INNER JOIN Cliente C ON C.idCliente = ev.idCliente
+    INNER JOIN tipoVenta tv ON tv.idTipoVenta = ev.idtipoVenta
+    INNER JOIN Usuario usu ON usu.idUsuario = ev.idUsuario
+    WHERE
+      (SUBSTRING(ev.fechaVenta, 1, 10) >= ? AND SUBSTRING(ev.fechaVenta, 1, 10) <= ? OR ev.fechaVenta IS NULL)
+      AND (ev.Estado = COALESCE(?, ev.Estado) )
+      AND ev.idEmpresa = ?
+    GROUP BY ev.idEncabezadoVenta, C.nombre, SUBSTRING(ev.fechaVenta, 1, 10), usu.nombre
+    ORDER BY ev.idEncabezadoVenta`,[fechaini,fechafin,status,idEmpresa]);
+      res.json(consulta[0]);
+   } catch (error) {
+       console.log(error); 
+       res.json({message:"algo salio mal"})
+   }
+   
+};
 module.exports = {
   getFacturasEncabezado,
   createFacturasEncabezadoVenta,
   deleteFacturasEncabezado,
   generarPdf,
+  ReporteFacturas,
 };
