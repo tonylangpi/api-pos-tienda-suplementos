@@ -53,11 +53,16 @@ const asignarUsuarioEmpresa = async(req, res) => {
         message: "Faltan datos",
       });
     } else {
-           connection.query(`INSERT INTO Empresas_Usuario SET ?`, {
+        const yaEstaAsignado = await connection.query(`SELECT * FROM Empresas_Usuario WHERE idEmpresa = ? AND idUsuario = ?`,[idEmpresa,idUsuario]); 
+        if(yaEstaAsignado[0].length > 0){
+            res.json({message:"Este usuario ya esta asignado a esa empresa"}); 
+        }else{
+           await  connection.query(`INSERT INTO Empresas_Usuario SET ?`, {
             idEmpresa: idEmpresa,
             idUsuario: idUsuario
           });
           res.json({message:"usuario asignado correctamente"});
+        }
     }
   } catch (error) {
     res.json(error);
